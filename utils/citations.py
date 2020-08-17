@@ -7,8 +7,6 @@ import yaml
 from pathlib import Path
 import string
 
-# TODO: Cache citations
-
 
 def main():
 
@@ -29,6 +27,15 @@ def main():
 
             # skip cache
             if filename == 'cache.yml':
+                continue
+
+            # find corresponding pugfile
+            pugfile = (Path(root) / Path(filename)
+                       ).relative_to('src/citations')
+            pugfile = 'src/pages/' + os.path.splitext(pugfile)[0] + '.pug'
+
+            # if pugfile doesn't exist, skip citation file
+            if not os.path.exists(pugfile):
                 continue
 
             with open(root + '/' + filename, 'r') as file:
@@ -60,11 +67,6 @@ def main():
                     raise SystemExit
 
                 parsed_citations.append(parsed_citation)
-
-            pugfile = (Path(root) / Path(filename)
-                       ).relative_to('src/citations')
-
-            pugfile = 'src/pages/' + os.path.splitext(pugfile)[0] + '.pug'
 
             with open(pugfile, 'r') as file:
                 lines = file.readlines()
